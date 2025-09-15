@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Helpdesk Dashboard SPA</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { display: flex; min-height: 100vh; background-color: #f4f6f8; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background-color: #2f3b52;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+    .sidebar h2 { text-align: center; margin-bottom: 30px; color: #ffcc00; }
+    .sidebar a {
+      color: #fff;
+      text-decoration: none;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .sidebar a:hover { background-color: #ffcc00; color: #2f3b52; }
+
+    /* Main content */
+    .main { flex: 1; padding: 30px; overflow-y: auto; }
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .header h1 { font-size: 2rem; color: #2f3b52; margin-bottom: 20px; }
+
+    /* Cards */
+    .cards { display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; }
+    .card {
+      flex: 1 1 200px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: 0.3s;
+    }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+    .card h3 { color: #555; margin-bottom: 10px; }
+    .card p { color: #2f3b52; font-weight: bold; font-size: 1.5rem; }
+
+    /* Graph */
+    .graph {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    .bar-container { display: flex; align-items: flex-end; justify-content: space-around; height: 150px; margin-top: 20px; }
+    .bar {
+      width: 40px;
+      background-color: #ffcc00;
+      border-radius: 6px 6px 0 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      color: #2f3b52;
+      font-weight: bold;
+    }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; background-color: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    table th, table td { padding: 12px; text-align: left; }
+    table th { background-color: #2f3b52; color: #fff; }
+    table tr:nth-child(even) { background-color: #f4f6f8; }
+    .status-aberto { color: #ff4d4d; font-weight: bold; }
+    .status-resolvido { color: #4caf50; font-weight: bold; }
+    .status-pendente { color: #ffa500; font-weight: bold; }
+
+    /* Pesquisa */
+    #searchInput {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>Projeto BPA</h2>
+    <a onclick="showSection('dashboard')">Dashboard</a>
+    <a onclick="showSection('formularios')">Formulários</a>
+    <a onclick="showSection('usuarios')">Usuários</a>
+    <a onclick="showSection('configuracoes')">Configurações</a>
+  </div>
+
+  <div class="main">
+    <!-- Dashboard -->
+    <div id="dashboard" class="section active">
+      <div class="header"><h1>Dashboard</h1></div>
+      <div class="cards">
+        <div class="card"><h3>Formulários Abertos</h3><p>12</p></div>
+        <div class="card"><h3>Formulários Resolvidos</h3><p>34</p></div>
+        <div class="card"><h3>Formulários Pendentes</h3><p>5</p></div>
+        <div class="card"><h3>Novos Formulários</h3><p>3</p></div>
+      </div>
+      <div class="graph">
+        <h3>Status Dashboard</h3>
+        <div class="bar-container">
+          <div class="bar" style="height: 120px;">12</div>
+          <div class="bar" style="height: 200px;">34</div>
+          <div class="bar" style="height: 80px;">5</div>
+          <div class="bar" style="height: 50px;">3</div>
+        </div>
+        <div style="display:flex; justify-content: space-around; margin-top: 10px;">
+          <span>Aberto</span>
+          <span>Resolvido</span>
+          <span>Pendente</span>
+          <span>Novos</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulários -->
+    <div id="formularios" class="section">
+      <div class="header"><h1>Formulários</h1></div>
+
+      <!-- Barra de pesquisa -->
+      <input type="text" id="searchInput" placeholder="Pesquisar por ID, CPF ou Usuário" onkeyup="searchTable()">
+
+      <table id="formulariosTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>CPF</th>
+            <th>Status</th>
+            <th>Usuário</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>001</td>
+            <td>***.717.850-09</td>
+            <td class="status-aberto">Aberto</td>
+            <td>João</td>
+            <td>15/09/2025</td>
+          </tr>
+          <tr>
+            <td>002</td>
+            <td>***.976.860-45</td>
+            <td class="status-resolvido">Resolvido</td>
+            <td>Maria</td>
+            <td>14/09/2025</td>
+          </tr>
+          <tr>
+            <td>003</td>
+            <td>***.263.500-93</td>
+            <td class="status-pendente">Pendente</td>
+            <td>Carlos</td>
+            <td>13/09/2025</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Usuários -->
+    <div id="usuarios" class="section">
+      <div class="header"><h1>Usuários</h1></div>
+      <p>Lista de usuários e permissões aqui.</p>
+    </div>
+
+    <!-- Configurações -->
+    <div id="configuracoes" class="section">
+      <div class="header"><h1>Configurações</h1></div>
+      <p>Ajustes do sistema, perfil e preferências.</p>
+    </div>
+  </div>
+
+  <script>
+    // Alterna entre seções
+    function showSection(sectionId) {
+      const sections = document.querySelectorAll('.section');
+      sections.forEach(sec => sec.classList.remove('active'));
+      document.getElementById(sectionId).classList.add('active');
+    }
+
+    // Pesquisa na tabela
+    function searchTable() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      const table = document.getElementById("formulariosTable");
+      const trs = table.getElementsByTagName("tr");
+
+      for (let i = 1; i < trs.length; i++) { // começa do 1 para pular o header
+        const tds = trs[i].getElementsByTagName("td");
+        let show = false;
+
+        for (let j = 0; j < 3; j++) { // verifica ID, CPF e Usuário
+          if (tds[j].textContent.toLowerCase().includes(input)) {
+            show = true;
+            break;
+          }
+        }
+
+        trs[i].style.display = show ? "" : "none";
+      }
+    }
+  </script>
+
+</body>
+</html>
